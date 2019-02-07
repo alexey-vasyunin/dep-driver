@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        try (RandomAccessFileExtended raf = new RandomAccessFileExtended(Main.exampleShrt, "r")){
+/*        try (RandomAccessFileExtended raf = new RandomAccessFileExtended(Main.exampleShrt, "r")){
             raf.seek(0);
             byte[] buffer = new byte[8192];
             DepRowStruct row = new DepRowStruct();
@@ -33,7 +33,7 @@ public class Main {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
     }
 

@@ -18,15 +18,12 @@ public class DepRowStruct {
     private DepRowParametr[] params;
     private ParSys parSys;
 
-    public DepRowStruct(byte[] row) {
 
+    public DepRowStruct(ParSys p) throws DepException{
+        parSys = p;
     }
 
-    public DepRowStruct() throws Exception{
-        parSys = new ParSys();
-    }
-
-    public long setRow(byte[] buffer) throws Exception{
+    public long setRow(byte[] buffer) throws DepException{
         try (ByteArrayInputStreamExtended dis = new ByteArrayInputStreamExtended(buffer)) {
             numRec = dis.readUnsignedIntLE();
             uniqueWell = dis.readUnsignedShortLE();
@@ -41,7 +38,7 @@ public class DepRowStruct {
                 ParsysRow parametr = parSys.getAllParsys().get(numRef).get(numPar);
 
                 byte[] b = new byte[parametr.getSize()];
-                if (dis.read(b) < b.length) throw new Exception("Can't read parametr");
+                if (dis.read(b) < b.length) throw new DepException("Can't read parametr");
 
                 String val = "";
                 switch (parametr.getFormat()){

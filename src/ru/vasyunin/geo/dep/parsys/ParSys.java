@@ -1,5 +1,6 @@
 package ru.vasyunin.geo.dep.parsys;
 
+import ru.vasyunin.geo.dep.DepException;
 import ru.vasyunin.geo.dep.RandomAccessFileExtended;
 
 import java.io.File;
@@ -11,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ParSys {
-    public String parsysPath = "D:\\GDrive\\Geo";
     private String[] rafe;
     private HashMap<Integer, HashMap<Integer,ParsysRow>> allParsys;
 
@@ -20,7 +20,7 @@ public class ParSys {
     }
 
 
-    public ParSys() throws Exception {
+    public ParSys(String parsysPath) throws DepException {
         // init
         allParsys = new HashMap<>();
 
@@ -43,11 +43,11 @@ public class ParSys {
                         char format = (char) r.readUnsignedByte();
 
                         byte buf[] = new byte[11];
-                        if (r.read(buf) < buf.length) throw new Exception("Can't read unit");
+                        if (r.read(buf) < buf.length) throw new DepException("Can't read unit");
                         String unit = new String(buf, "cp866");
 
                         buf = new byte[21];
-                        if (r.read(buf) < buf.length) throw new Exception("Can't read unit name");
+                        if (r.read(buf) < buf.length) throw new DepException("Can't read unit name");
                         String name = new String(buf, "cp866");
 
                         ParsysRow row = new ParsysRow(factor, num, size, format, unit, name);
