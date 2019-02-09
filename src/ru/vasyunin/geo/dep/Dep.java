@@ -1,11 +1,9 @@
 package ru.vasyunin.geo.dep;
 
+import ru.vasyunin.geo.dep.lst.LstRow;
 import ru.vasyunin.geo.dep.parsys.ParSys;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
@@ -13,26 +11,32 @@ import java.util.function.Consumer;
 
 public class Dep implements Iterable<DepRowStruct>{
     private String dataFile;
-    private Path indexFile;
+    private String indexFile;
     private ParSys parSys;
 
     private byte[] buffer;
+    private byte[] lstbuf;
     private long currentDepOffset = 0;
+    private long currentLstOffset = 0;
 
     private RandomAccessFileExtended rafeDataFile;
+    private RandomAccessFileExtended rafeIndexFile;
 
     public Dep(String dataDepFilename, String indexLstFilename, String parsysDirname) throws DepException {
         dataFile = dataDepFilename;
-        indexFile = Paths.get(indexLstFilename);
+        indexFile = indexLstFilename;
 
         parSys = new ParSys(parsysDirname);
         buffer = new byte[8192];
+        lstbuf = new byte[21];
     }
 
     public boolean open() {
         try {
             rafeDataFile = new RandomAccessFileExtended(dataFile, "r");
             rafeDataFile.seek(0);
+            rafeIndexFile = new RandomAccessFileExtended(indexFile, "r");
+            rafeIndexFile.seek(0);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -43,6 +47,7 @@ public class Dep implements Iterable<DepRowStruct>{
     public boolean close(){
         try {
             rafeDataFile.close();
+            rafeIndexFile.close();
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -50,8 +55,8 @@ public class Dep implements Iterable<DepRowStruct>{
         return false;
     }
 
-    private DepRowStruct readRow() throws IOException, DepException {
-        currentDepOffset = rafeDataFile.getFilePointer();
+    private DepRowStruct readDataRow() throws IOException, DepException {
+//        currentDepOffset = rafeDataFile.getFilePointer();
         if (rafeDataFile.skipBytes(6) != 6) throw new NoSuchElementException();
         int reclength = rafeDataFile.readUnsignedShortLE();
         rafeDataFile.seek(currentDepOffset);
@@ -60,6 +65,12 @@ public class Dep implements Iterable<DepRowStruct>{
         }
         currentDepOffset = rafeDataFile.getFilePointer();
         return new DepRowStruct(buffer, parSys);
+    }
+
+    private LstRow readIndexRow() throws IOException, DepException {
+        currentLstOffset = rafeIndexFile.getFilePointer();
+        if (rafeIndexFile.read(lstbuf) < lstbuf.length) throw new NoSuchElementException();
+        return new LstRow(lstbuf);
     }
 
 
@@ -102,7 +113,8 @@ public class Dep implements Iterable<DepRowStruct>{
         @Override
         public DepRowStruct next() {
             try {
-                return dep.readRow();
+                dep.setCurrentDepOffset(dep.readIndexRow().getSeek_file());
+                return dep.readDataRow();
             } catch (DepException | IOException e) {
                 e.printStackTrace();
             }

@@ -3,6 +3,8 @@ package ru.vasyunin.geo.dep;
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class ByteArrayInputStreamExtended extends ByteArrayInputStream {
     public ByteArrayInputStreamExtended(byte[] buf) {
@@ -39,5 +41,12 @@ public class ByteArrayInputStreamExtended extends ByteArrayInputStream {
         if (ch < 0)
             throw new EOFException();
         return ch;
+    }
+
+    public final float readUnsignedFloatLE() throws IOException {
+        byte[] buf = new byte[4];
+        int ch = read(buf);
+        if (ch < 4) throw new EOFException();
+        return ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN).getFloat();
     }
 }
