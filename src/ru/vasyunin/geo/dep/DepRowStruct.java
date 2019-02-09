@@ -23,6 +23,13 @@ public class DepRowStruct {
         parSys = p;
     }
 
+    public DepRowStruct(byte[] buffer, ParSys p) throws DepException{
+        parSys = p;
+        setRow(buffer);
+    }
+
+
+
     public long setRow(byte[] buffer) throws DepException{
         try (ByteArrayInputStreamExtended dis = new ByteArrayInputStreamExtended(buffer)) {
             numRec = dis.readUnsignedIntLE();
