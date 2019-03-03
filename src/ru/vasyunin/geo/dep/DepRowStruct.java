@@ -1,5 +1,6 @@
 package ru.vasyunin.geo.dep;
 
+import lombok.Data;
 import ru.vasyunin.geo.dep.parsys.ParSys;
 import ru.vasyunin.geo.dep.parsys.ParsysRow;
 
@@ -7,9 +8,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
+@Data
 public class DepRowStruct {
-
     private long numRec;
     private int uniqueWell;
     private int recLenght;
@@ -17,7 +20,6 @@ public class DepRowStruct {
     private int numAllPars;
     private DepRowParametr[] params;
     private ParSys parSys;
-
 
     public DepRowStruct(ParSys p) throws DepException{
         parSys = p;
@@ -64,6 +66,16 @@ public class DepRowStruct {
             e.printStackTrace();
         }
         return numRec;
+    }
+
+    public Map<String, Object> getParamsMap(){
+        Map<String, Object> hm = new HashMap<>();
+        hm.put("numrec", numRec);
+        hm.put("uniquewell", uniqueWell);
+        for (DepRowParametr dpr: params){
+            hm.put(String.valueOf(dpr.getNumPar()), dpr.getValue());
+        }
+        return hm;
     }
 
     @Override

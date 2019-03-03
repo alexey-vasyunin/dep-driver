@@ -113,7 +113,9 @@ public class Dep implements Iterable<DepRowStruct>{
         @Override
         public DepRowStruct next() {
             try {
-                dep.setCurrentDepOffset(dep.readIndexRow().getSeek_file());
+                LstRow lstRow = dep.readIndexRow();
+                dep.setCurrentDepOffset(lstRow.getSeek_file());
+//                System.out.println("lst: " + lstRow.getSeek_file() + "\t" + lstRow.getDatetime() + "\t" + lstRow.getDepth());
                 return dep.readDataRow();
             } catch (DepException | IOException e) {
                 e.printStackTrace();

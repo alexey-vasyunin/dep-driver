@@ -1,18 +1,22 @@
 package ru.vasyunin.geo.dep;
 
+import lombok.Data;
 import ru.vasyunin.geo.dep.parsys.ParSys;
 
+@Data
 public class DepRowParametr {
-    public int numRef;
-    public int numPar;
-    public String value;
+    private int numRef;
+    private int numPar;
+    private String value;
 
     private ParSys parSys;
 
-    public void setParSys(ParSys parSys) {
-        this.parSys = parSys;
-    }
-
+    /**
+     *
+     * @param numRef Number of parsys file
+     * @param numPar Number of parametr
+     * @param value Value of parametr
+     */
     public DepRowParametr(int numRef, int numPar, String value) {
         this.numRef = numRef;
         this.numPar = numPar;
